@@ -41,6 +41,7 @@ const MissionDetailPage: React.FC = () => {
   const [photoError, setPhotoError] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
+  const [lastUserInput, setLastUserInput] = useState<number>(0);
 
   const loadMission = async () => {
     if (!id) return;
@@ -113,8 +114,12 @@ const MissionDetailPage: React.FC = () => {
         }
         
         setMission(newMission);
-        // Only reset answer if user is not actively typing or if it's a submitted answer
-        if (!isTyping || newMission.submitted_answer) {
+        // Only reset answer if:
+        // 1. User hasn't typed in the last 5 seconds AND
+        // 2. Either there's no current answer OR there's a submitted answer from server
+        const now = Date.now();
+        const timeSinceLastInput = now - lastUserInput;
+        if (timeSinceLastInput > 5000 && (!answer.trim() || newMission.submitted_answer)) {
           setAnswer(newMission.submitted_answer || '');
         }
         setError('');
@@ -131,8 +136,12 @@ const MissionDetailPage: React.FC = () => {
   useEffect(() => {
     loadMission();
     
-    // Refresh every 3 seconds to check status updates
-    const interval = setInterval(loadMission, 3000);
+    // Refresh every 3 seconds to check status updates, but only if user is not typing
+    const interval = setInterval(() => {
+      if (!isTyping) {
+        loadMission();
+      }
+    }, 3000);
     return () => {
       clearInterval(interval);
       // Clean up typing timeout
@@ -140,7 +149,7 @@ const MissionDetailPage: React.FC = () => {
         clearTimeout(typingTimeout);
       }
     };
-  }, [id]);
+  }, [id, isTyping]);
 
   // Cleanup typing timeout on unmount
   useEffect(() => {
@@ -495,12 +504,13 @@ const MissionDetailPage: React.FC = () => {
                       onChange={(e) => {
                         setAnswer(e.target.value);
                         setIsTyping(true);
+                        setLastUserInput(Date.now());
                         // Clear existing timeout
                         if (typingTimeout) {
                           clearTimeout(typingTimeout);
                         }
-                        // Set new timeout to reset typing state after 2 seconds
-                        const timeout = setTimeout(() => setIsTyping(false), 2000);
+                        // Set new timeout to reset typing state after 5 seconds
+                        const timeout = setTimeout(() => setIsTyping(false), 5000);
                         setTypingTimeout(timeout);
                       }}
                       onBlur={() => setIsTyping(false)}

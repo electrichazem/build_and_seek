@@ -1,7 +1,7 @@
 // adminApi.ts
 import type { ReviewSubmissionResponse, GetPhotoResponse } from './types';
 
-const ADMIN_API_BASE_URL = 'http://localhost/robo_workshop';
+const ADMIN_API_BASE_URL = 'https://api.expertfle.org/robo';
 
 // Helper function to get admin auth headers
 const getAdminAuthHeaders = () => {
