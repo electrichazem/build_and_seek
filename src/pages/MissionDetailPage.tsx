@@ -39,6 +39,8 @@ const MissionDetailPage: React.FC = () => {
   const [success, setSuccess] = useState('');
   const [photoSuccess, setPhotoSuccess] = useState('');
   const [photoError, setPhotoError] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
 
   const loadMission = async () => {
     if (!id) return;
@@ -111,7 +113,10 @@ const MissionDetailPage: React.FC = () => {
         }
         
         setMission(newMission);
-        setAnswer(newMission.submitted_answer || '');
+        // Only reset answer if user is not actively typing or if it's a submitted answer
+        if (!isTyping || newMission.submitted_answer) {
+          setAnswer(newMission.submitted_answer || '');
+        }
         setError('');
       } else {
         setError('Failed to load mission details');
@@ -128,8 +133,23 @@ const MissionDetailPage: React.FC = () => {
     
     // Refresh every 3 seconds to check status updates
     const interval = setInterval(loadMission, 3000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      // Clean up typing timeout
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+    };
   }, [id]);
+
+  // Cleanup typing timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+    };
+  }, [typingTimeout]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -472,7 +492,18 @@ const MissionDetailPage: React.FC = () => {
                     <textarea
                       id="answer"
                       value={answer}
-                      onChange={(e) => setAnswer(e.target.value)}
+                      onChange={(e) => {
+                        setAnswer(e.target.value);
+                        setIsTyping(true);
+                        // Clear existing timeout
+                        if (typingTimeout) {
+                          clearTimeout(typingTimeout);
+                        }
+                        // Set new timeout to reset typing state after 2 seconds
+                        const timeout = setTimeout(() => setIsTyping(false), 2000);
+                        setTypingTimeout(timeout);
+                      }}
+                      onBlur={() => setIsTyping(false)}
                       placeholder="Enter your answer here..."
                       className="w-full h-32 px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all resize-none"
                       required
