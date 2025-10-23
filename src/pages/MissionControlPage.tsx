@@ -155,7 +155,7 @@ const MissionControlPage: React.FC = () => {
                 )}
 
                 {/* Progress Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 text-white">
                         <div className="text-3xl font-bold mb-2">{progress.total_questions}</div>
                         <div className="text-white/80">Total Missions</div>
@@ -174,11 +174,6 @@ const MissionControlPage: React.FC = () => {
                     <div className="bg-yellow-500/20 backdrop-blur-sm border border-yellow-400 rounded-xl p-6 text-white">
                         <div className="text-3xl font-bold mb-2">{progress.pending_answer}</div>
                         <div className="text-white/80">Answer Pending</div>
-                    </div>
-
-                    <div className="bg-orange-500/20 backdrop-blur-sm border border-orange-400 rounded-xl p-6 text-white">
-                        <div className="text-3xl font-bold mb-2">{progress.pending_photo}</div>
-                        <div className="text-white/80">Photo Pending</div>
                     </div>
                 </div>
 

@@ -19,30 +19,33 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
   const addToast = useCallback((toast: Omit<ToastType, 'id'>) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const newToast: ToastType = {
-      ...toast,
-      id,
-      duration: toast.duration || 5000
-    };
+    // Toast notifications are disabled - do nothing
+    // const id = Math.random().toString(36).substr(2, 9);
+    // const newToast: ToastType = {
+    //   ...toast,
+    //   id,
+    //   duration: toast.duration || 5000
+    // };
     
-    setToasts(prev => [...prev, newToast]);
+    // setToasts(prev => [...prev, newToast]);
   }, []);
 
   const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+    // Toast notifications are disabled - do nothing
+    // setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);
 
   const clearAllToasts = useCallback(() => {
-    setToasts([]);
+    // Toast notifications are disabled - do nothing
+    // setToasts([]);
   }, []);
 
   return (
     <ToastContext.Provider value={{ toasts, addToast, removeToast, clearAllToasts }}>
       {children}
       
-      {/* Toast Container */}
-      <div className="fixed top-4 right-4 z-50 space-y-2 max-w-sm">
+      {/* Toast Container - Disabled */}
+      {/* <div className="fixed top-4 right-4 z-50 space-y-2 max-w-sm">
         {toasts.map(toast => (
           <ToastComponent
             key={toast.id}
@@ -50,7 +53,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
             onRemove={removeToast}
           />
         ))}
-      </div>
+      </div> */}
     </ToastContext.Provider>
   );
 };

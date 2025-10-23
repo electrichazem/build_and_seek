@@ -4,6 +4,7 @@ import { useAuthContext } from '../authContext';
 import { useToastHelpers } from '../contexts/ToastContext';
 import { apiService } from '../api';
 import PhotoUpload from '../components/PhotoUpload';
+import ImageZoomModal from '../components/ImageZoomModal';
 
 interface MissionDetail {
   id: number;
@@ -42,6 +43,7 @@ const MissionDetailPage: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
   const [lastUserInput, setLastUserInput] = useState<number>(0);
+  const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
 
   const loadMission = async () => {
     if (!id) return;
@@ -410,20 +412,29 @@ const MissionDetailPage: React.FC = () => {
                 <h2 className="text-xl font-bold text-white mb-3">🔓 Unlocked Hint</h2>
                 <div className="bg-blue-500/20 p-4 rounded-lg border border-blue-400">
                   {mission.hint.startsWith('http') ? (
-                    <img 
-                      src={mission.hint} 
-                      alt="Hint" 
-                      className="w-full max-w-md mx-auto rounded-lg shadow-lg"
-                      onError={(e) => {
-                        // Show error message if image fails to load
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'text-red-300 text-center p-4';
-                        errorDiv.textContent = 'Failed to load hint image';
-                        target.parentNode?.appendChild(errorDiv);
-                      }}
-                    />
+                    <div className="relative group">
+                      <img 
+                        src={mission.hint} 
+                        alt="Hint" 
+                        className="w-full max-w-md mx-auto rounded-lg shadow-lg cursor-pointer transition-transform hover:scale-105"
+                        onClick={() => setIsZoomModalOpen(true)}
+                        onError={(e) => {
+                          // Show error message if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const errorDiv = document.createElement('div');
+                          errorDiv.className = 'text-red-300 text-center p-4';
+                          errorDiv.textContent = 'Failed to load hint image';
+                          target.parentNode?.appendChild(errorDiv);
+                        }}
+                      />
+                      {/* Click to zoom overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none">
+                        <div className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                          🔍 Click to zoom
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <p className="text-white/90 font-medium">{mission.hint}</p>
                   )}
@@ -457,7 +468,20 @@ const MissionDetailPage: React.FC = () => {
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <h2 className="text-xl font-bold text-white mb-3">📷 Photo Submission</h2>
                 <div className="bg-black/20 p-4 rounded-lg">
-                  <p className="text-white/80">Photo submitted: {mission.photo_filename}</p>
+                  <img 
+                    src={mission.photo_filename} 
+                    alt="Submitted photo" 
+                    className="w-full max-w-md mx-auto rounded-lg shadow-lg"
+                    onError={(e) => {
+                      // Show error message if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const errorDiv = document.createElement('div');
+                      errorDiv.className = 'text-red-300 text-center p-4';
+                      errorDiv.textContent = 'Failed to load photo';
+                      target.parentNode?.appendChild(errorDiv);
+                    }}
+                  />
                 </div>
                 {mission.photo_status && (
                   <div className="mt-3">
@@ -633,6 +657,16 @@ const MissionDetailPage: React.FC = () => {
 
 
       </div>
+
+      {/* Image Zoom Modal */}
+      {mission?.hint && mission.hint.startsWith('http') && (
+        <ImageZoomModal
+          isOpen={isZoomModalOpen}
+          onClose={() => setIsZoomModalOpen(false)}
+          imageUrl={mission.hint}
+          alt="Hint image"
+        />
+      )}
 
       {/* Add some CSS for the mission content */}
       <style>{`
