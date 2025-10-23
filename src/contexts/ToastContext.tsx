@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import ToastComponent from '../components/Toast';
 import type { Toast as ToastType } from '../components/Toast';
 
 interface ToastContextType {
@@ -16,9 +15,9 @@ interface ToastProviderProps {
 }
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
-  const [toasts, setToasts] = useState<ToastType[]>([]);
+  const [toasts] = useState<ToastType[]>([]);
 
-  const addToast = useCallback((toast: Omit<ToastType, 'id'>) => {
+  const addToast = useCallback((_toast: Omit<ToastType, 'id'>) => {
     // Toast notifications are disabled - do nothing
     // const id = Math.random().toString(36).substr(2, 9);
     // const newToast: ToastType = {
@@ -30,7 +29,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
     // setToasts(prev => [...prev, newToast]);
   }, []);
 
-  const removeToast = useCallback((id: string) => {
+  const removeToast = useCallback((_id: string) => {
     // Toast notifications are disabled - do nothing
     // setToasts(prev => prev.filter(toast => toast.id !== id));
   }, []);

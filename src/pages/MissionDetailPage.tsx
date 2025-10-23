@@ -29,7 +29,7 @@ interface MissionDetail {
 const MissionDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { logoutTeam } = useAuthContext();
+  const { logoutTeam, teamName } = useAuthContext();
   const { showSuccess, showError, showWarning } = useToastHelpers();
   
   const [mission, setMission] = useState<MissionDetail | null>(null);
@@ -55,8 +55,9 @@ const MissionDetailPage: React.FC = () => {
         
         // Check for status changes and show toasts
         if (mission) {
-          // Check if question became globally completed
-          if (!mission.is_globally_completed && newMission.is_globally_completed) {
+          // Check if question became globally completed by another team
+          if (!mission.is_globally_completed && newMission.is_globally_completed && 
+              newMission.completed_by_team !== teamName) {
             showWarning(
               'Question Completed by Another Team',
               `"${newMission.title}" has been completed by ${newMission.completed_by_team || 'another team'} and is now locked.`,
@@ -260,6 +261,15 @@ const MissionDetailPage: React.FC = () => {
           message: 'Congratulations! You have successfully completed this mission.'
         };
       case 'globally_completed':
+        // Check if completed by current team
+        if (mission?.completed_by_team === teamName) {
+          return {
+            color: 'bg-purple-500/20 border-purple-400 text-purple-100',
+            icon: '✓',
+            text: 'Mission Completed',
+            message: 'Congratulations! You have successfully completed this mission.'
+          };
+        }
         return {
           color: 'bg-red-500/20 border-red-400 text-red-100',
           icon: '🔒',
@@ -375,7 +385,7 @@ const MissionDetailPage: React.FC = () => {
                 <h2 className="text-xl font-semibold">{statusConfig.text}</h2>
               </div>
               <p>{statusConfig.message}</p>
-              {mission.status === 'globally_completed' && mission.completed_by_team && (
+              {mission.status === 'globally_completed' && mission.completed_by_team && mission.completed_by_team !== teamName && (
                 <div className="mt-4 p-3 bg-red-500/20 rounded-lg border border-red-400">
                   <strong>Completed by:</strong> {mission.completed_by_team}
                   {mission.completed_at && (
@@ -501,7 +511,9 @@ const MissionDetailPage: React.FC = () => {
           {/* Submission Panel */}
           <div className="space-y-6">
             {/* Submit Answer Card */}
-            {mission.can_submit_answer && mission.status !== 'globally_completed' && (
+            {mission.can_submit_answer && 
+             mission.status !== 'globally_completed' && 
+             !(mission.status === 'globally_completed' && mission.completed_by_team === teamName) && (
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <h2 className="text-xl font-bold text-white mb-4">Submit Answer</h2>
                 
@@ -567,7 +579,9 @@ const MissionDetailPage: React.FC = () => {
             )}
 
             {/* Submit Photo Card */}
-            {mission.can_submit_photo && mission.status !== 'globally_completed' && (
+            {mission.can_submit_photo && 
+             mission.status !== 'globally_completed' && 
+             !(mission.status === 'globally_completed' && mission.completed_by_team === teamName) && (
               <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6">
                 <h2 className="text-xl font-bold text-white mb-4">Submit Photo</h2>
                 
@@ -592,7 +606,7 @@ const MissionDetailPage: React.FC = () => {
             )}
 
             {/* Locked Question Message */}
-            {mission.status === 'globally_completed' && (
+            {mission.status === 'globally_completed' && mission.completed_by_team !== teamName && (
               <div className="bg-red-500/20 backdrop-blur-sm border border-red-400 rounded-2xl p-6">
                 <div className="flex items-center space-x-3 mb-4">
                   <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -603,7 +617,7 @@ const MissionDetailPage: React.FC = () => {
                 <p className="text-red-100 mb-4">
                   This question has been completed by another team and is no longer available for submissions.
                 </p>
-                {mission.completed_by_team && (
+                {mission.completed_by_team && mission.completed_by_team !== teamName && (
                   <div className="bg-red-500/30 p-3 rounded-lg">
                     <p className="text-red-100 text-sm">
                       <strong>Completed by:</strong> {mission.completed_by_team}
