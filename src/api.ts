@@ -1,7 +1,7 @@
 import type { TeamEntryResponse, SubmitPhotoResponse } from './types';
 
-// const API_BASE_URL = 'https://api.expertfle.org/robo';
-const API_BASE_URL = 'http://localhost/robo_workshop';
+const API_BASE_URL = 'https://api.expertfle.org/robo';
+// const API_BASE_URL = 'http://localhost/robo_workshop';
 
 
 // Helper function to get auth headers
