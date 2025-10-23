@@ -18,7 +18,7 @@ export interface Question {
   hint_image_url?: string; // Optional separate image URL field
   display_order: number;
   is_active: boolean;
-  status: 'available' | 'pending_answer' | 'hint_unlocked' | 'pending_photo' | 'completed' | 'rejected' | 'globally_completed';
+  status: 'available' | 'pending_answer' | 'hint_unlocked' | 'pending_photo' | 'completed' | 'rejected' | 'globally_completed' | 'completed_by_me';
   can_submit_answer: boolean;
   can_submit_photo: boolean;
   answer_status?: 'pending' | 'accepted' | 'rejected';
@@ -78,7 +78,7 @@ export interface QuestionDetailResponse {
     description_html: string;
     hint: string;
     hint_image_url?: string;
-    status: 'available' | 'pending_answer' | 'hint_unlocked' | 'pending_photo' | 'completed' | 'rejected' | 'globally_completed';
+    status: 'available' | 'pending_answer' | 'hint_unlocked' | 'pending_photo' | 'completed' | 'rejected' | 'globally_completed' | 'completed_by_me';
     can_submit_answer: boolean;
     can_submit_photo: boolean;
     submitted_answer?: string;

@@ -73,14 +73,12 @@ const MissionControlPage: React.FC = () => {
         navigate('/enter');
     };
 
-    const getStatusColor = (status: string, completedByTeam?: string) => {
+    const getStatusColor = (status: string) => {
         switch (status) {
-            case 'completed': return 'bg-purple-500/20 border-purple-400 text-purple-100';
+            case 'completed':
+            case 'completed_by_me':
+                return 'bg-purple-500/20 border-purple-400 text-purple-100';
             case 'globally_completed': 
-                // If completed by current team, show as completed
-                if (completedByTeam === teamName) {
-                    return 'bg-purple-500/20 border-purple-400 text-purple-100';
-                }
                 return 'bg-red-500/20 border-red-400 text-red-100';
             case 'hint_unlocked': return 'bg-blue-500/20 border-blue-400 text-blue-100';
             case 'pending_answer': return 'bg-yellow-500/20 border-yellow-400 text-yellow-100';
@@ -90,14 +88,12 @@ const MissionControlPage: React.FC = () => {
         }
     };
 
-    const getStatusText = (status: string, completedByTeam?: string) => {
+    const getStatusText = (status: string) => {
         switch (status) {
-            case 'completed': return 'Completed';
+            case 'completed':
+            case 'completed_by_me':
+                return 'Completed';
             case 'globally_completed': 
-                // If completed by current team, show as completed
-                if (completedByTeam === teamName) {
-                    return 'Completed';
-                }
                 return 'Solved by Another Team';
             case 'hint_unlocked': return 'Take Photo';
             case 'pending_answer': return 'Answer Pending';
@@ -209,8 +205,7 @@ const MissionControlPage: React.FC = () => {
                                     key={question.id}
                                     to={`/mission/${question.id}`}
                                     className={`block border rounded-xl p-4 transition-all transform ${
-                                        question.status === 'completed' || 
-                                        (question.status === 'globally_completed' && question.completed_by_team === teamName)
+                                        question.status === 'completed' || question.status === 'completed_by_me'
                                             ? 'bg-purple-500/10 border-purple-400 cursor-default'
                                             : question.status === 'globally_completed'
                                             ? 'bg-red-500/10 border-red-400 cursor-default opacity-75'
@@ -219,8 +214,8 @@ const MissionControlPage: React.FC = () => {
                                 >
                                     <div className="flex justify-between items-start mb-3">
                                         <h3 className="text-white font-semibold text-lg">{question.title}</h3>
-                                        <span className={`px-2 py-1 rounded text-xs ${getStatusColor(question.status, question.completed_by_team)}`}>
-                                            {getStatusText(question.status, question.completed_by_team)}
+                                        <span className={`px-2 py-1 rounded text-xs ${getStatusColor(question.status)}`}>
+                                            {getStatusText(question.status)}
                                         </span>
                                     </div>
 
@@ -229,14 +224,14 @@ const MissionControlPage: React.FC = () => {
                                             Mission #{question.display_order}
                                         </span>
                                         {question.status !== 'completed' && 
-                                         !(question.status === 'globally_completed' && question.completed_by_team === teamName) && 
+                                         question.status !== 'completed_by_me' && 
                                          question.status !== 'globally_completed' && (
                                             <div className="text-white/80 text-sm">
                                                 {question.can_submit_answer ? 'Submit Answer' : 
                                                  question.can_submit_photo ? 'Take Photo' : 'Reviewing'}
                                             </div>
                                         )}
-                                        {question.status === 'globally_completed' && question.completed_by_team !== teamName && (
+                                        {question.status === 'globally_completed' && (
                                             <div className="text-red-300 text-sm flex items-center">
                                                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -244,8 +239,7 @@ const MissionControlPage: React.FC = () => {
                                                 Locked
                                             </div>
                                         )}
-                                        {(question.status === 'completed' || 
-                                          (question.status === 'globally_completed' && question.completed_by_team === teamName)) && (
+                                        {(question.status === 'completed' || question.status === 'completed_by_me') && (
                                             <div className="text-purple-300 text-sm flex items-center">
                                                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
