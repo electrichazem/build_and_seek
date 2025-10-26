@@ -67,23 +67,21 @@ export const useToast = () => {
 
 // Convenience functions for common toast types
 export const useToastHelpers = () => {
-  const { addToast } = useToast();
+  const showSuccess = useCallback((_title: string, _message: string, _action?: ToastType['action']) => {
+    // Toast notifications disabled - do nothing
+  }, []);
 
-  const showSuccess = useCallback((title: string, message: string, action?: ToastType['action']) => {
-    addToast({ type: 'success', title, message, action });
-  }, [addToast]);
+  const showError = useCallback((_title: string, _message: string, _action?: ToastType['action']) => {
+    // Toast notifications disabled - do nothing
+  }, []);
 
-  const showError = useCallback((title: string, message: string, action?: ToastType['action']) => {
-    addToast({ type: 'error', title, message, action });
-  }, [addToast]);
+  const showWarning = useCallback((_title: string, _message: string, _action?: ToastType['action']) => {
+    // Toast notifications disabled - do nothing
+  }, []);
 
-  const showWarning = useCallback((title: string, message: string, action?: ToastType['action']) => {
-    addToast({ type: 'warning', title, message, action });
-  }, [addToast]);
-
-  const showInfo = useCallback((title: string, message: string, action?: ToastType['action']) => {
-    addToast({ type: 'info', title, message, action });
-  }, [addToast]);
+  const showInfo = useCallback((_title: string, _message: string, _action?: ToastType['action']) => {
+    // Toast notifications disabled - do nothing
+  }, []);
 
   return {
     showSuccess,
