@@ -29,7 +29,7 @@ interface MissionDetail {
 const MissionDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { logoutTeam, teamName } = useAuthContext();
+  const { logoutTeam } = useAuthContext();
   const { showSuccess, showError, showWarning } = useToastHelpers();
   
   const [mission, setMission] = useState<MissionDetail | null>(null);
